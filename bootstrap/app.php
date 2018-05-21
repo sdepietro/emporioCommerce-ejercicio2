@@ -12,7 +12,7 @@
 */
 
 $app = new Illuminate\Foundation\Application(
-    realpath(__DIR__.'/../')
+    realpath(__DIR__ . '/../')
 );
 
 /*
@@ -40,6 +40,10 @@ $app->singleton(
     Illuminate\Contracts\Debug\ExceptionHandler::class,
     App\Exceptions\Handler::class
 );
+
+$app->singleton(App\Libreries\Meli::class, function () {
+    return new App\Libreries\Meli(env('MERCADOLIBRE_APP_KEY'), env('MERCADOLIBRE_APP_SECRET'));
+});
 
 /*
 |--------------------------------------------------------------------------

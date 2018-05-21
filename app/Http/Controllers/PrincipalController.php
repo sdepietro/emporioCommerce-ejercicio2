@@ -7,15 +7,44 @@ use Illuminate\Http\Request;
 use App\Libreries\Meli;
 use App\Services\MeliProducts;
 
-
+/**
+ * Class PrincipalController
+ * @package App\Http\Controllers
+ */
 class PrincipalController extends Controller
 {
 
+    protected $meliProducts;
+    protected $searchUtils;
+
+
+    /**
+     * PrincipalController constructor.
+     * @param MeliProducts $meliProducts
+     * @param SearchUtils $searchUtils
+     */
+    public function __construct(MeliProducts $meliProducts, SearchUtils $searchUtils)
+    {
+
+        $this->meliProducts = $meliProducts;
+        $this->searchUtils = $searchUtils;
+
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function index(Request $request)
     {
         return view('principal.index');
     }
 
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\View\View
+     */
     public function search(Request $request)
     {
 
@@ -30,8 +59,7 @@ class PrincipalController extends Controller
             unset($params['remove_filter']);
         }
 
-        $meliProducts = new MeliProducts();
-        $products = $meliProducts->getProducts($params);
+        $products = $this->meliProducts->getProducts($params);
 
         $searchUtils = new SearchUtils();
         $querySearch = $searchUtils->parser($params);
@@ -56,17 +84,14 @@ class PrincipalController extends Controller
             return redirect('/');
         }
 
-        $params = [];
+        $meliProducts = new MeliProducts();
+        $product = $meliProducts->getProduct($productId);
 
-        $meli = new Meli(env('MERCADOLIBRE_APP_KEY', false), env('MERCADOLIBRE_APP_SECRET', false));
-        $result = $meli->get('/items/'.$productId, $params);
-        $description = $meli->get('/items/'.$productId.'/description', $params);
 
 
 
         $data = [
-            'product' => $result['body'],
-            'description' => $description['body']->plain_text,
+            'product' => $product,
         ];
 
         return view('principal.product', $data);
