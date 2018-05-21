@@ -84,10 +84,7 @@ class PrincipalController extends Controller
             return redirect('/');
         }
 
-        $meliProducts = new MeliProducts();
-        $product = $meliProducts->getProduct($productId);
-
-
+        $product = $this->meliProducts->getProduct($productId);
 
 
         $data = [
